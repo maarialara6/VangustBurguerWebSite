@@ -14,11 +14,11 @@
 
 		<div class="user-info">
 			<span>Olá <strong>Adm</strong></span>
-			<a href="index.html" class="btn-sair">Sair</a>
+			<a href="index.php" class="btn-sair">Sair</a>
 		</div>
 	</header>
 
-	<!-- Cabeçalho -->
+	<!-- Menu lateral -->
 	<div>
 		<aside class="sidebar">
 			<nav class="nav-menu">
