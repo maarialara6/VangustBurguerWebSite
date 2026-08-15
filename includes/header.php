@@ -13,10 +13,14 @@
 
 	<div>
 		<form action="pedidos.php" method="GET">
-			<label></label>
-			<label></label>
-			<label></label>
+			<label for="Buscar"></label>
+			<input type="text" id="buscar" name="pesquisa" placeholder="Procure aqui"></label>
+			<button type="submit"></button>
 		</form>
+	</div>
+
+	<div>
+		
 	</div>
 </body>
 </html>
