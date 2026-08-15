@@ -33,6 +33,12 @@
 		<div>
 			<p>Olá <strong>Admin</strong></p>
 		</div>
+
+		<ul>
+			<li><a href="">Perfil</a></li>
+			<li><a href="">Configurações</a></li>
+			<li><a href="">Sair</a></li>
+		</ul>
 	</div>
 </body>
 </html>
