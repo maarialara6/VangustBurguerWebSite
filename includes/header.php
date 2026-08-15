@@ -33,8 +33,6 @@
             <li>
                 <a href="notificacoes.php">
                     Notificações
-                    <!-- Indicador de que há alertas pendentes -->
-                    <span>(Novo)</span>
                 </a>
             </li>
 
