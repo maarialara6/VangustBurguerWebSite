@@ -20,7 +20,9 @@
 	</div>
 
 	<div>
-		
+		<a href="pedidos.php">
+			Alertas Ativos (Há novos pedidos pendentes)
+		</a>
 	</div>
 </body>
 </html>
