@@ -7,34 +7,58 @@
 </head>
 <body>
 	<div>
-		<img src="" alt="Logo do restaurante">
-		<p>Painel do restaurante</p>
-	</div>
+        <!-- Espaço vazio reservado para alinhamento com o Menu Lateral (Sidebar)-->
+    </div>
 
-	<div>
-		<form action="pedidos.php" method="GET">
-			<label for="Buscar"></label>
-			<input type="text" id="buscar" name="pesquisa" placeholder="Procure aqui"></label>
-			<button type="submit"></button>
-		</form>
-	</div>
+    <!-- Container Geral-->
+    <div>
+        
+        <!-- Botão para abrir o menu-->
+        <button type="button">
+            Menu
+        </button>
 
-	<div>
-		<a href="pedidos.php">
-			Alertas Ativos (Há novos pedidos pendentes)
-		</a>
-	</div>
+        <!-- Barra de Pesquisa-->
+        <form action="pedidos.php" method="GET">
+            <div>
+                <label for="campo-busca">Buscar:</label>
+                <input id="campo-busca" type="search" name="pesquisa" placeholder="Buscar pedido ou prato...">
+            </div>
+        </form>
 
-	<div>
-		<div>
-			<p>Olá <strong>Admin</strong></p>
-		</div>
+        <!-- Ações do Lado Direito -->
+        <ul>
+            
+            <!-- Link de Notificações de Novos Pedidos -->
+            <li>
+                <a href="notificacoes.php">
+                    Notificações
+                    <!-- Indicador de que há alertas pendentes -->
+                    <span>(Novo)</span>
+                </a>
+            </li>
 
-		<ul>
-			<li><a href="">Perfil</a></li>
-			<li><a href="">Configurações</a></li>
-			<li><a href="">Sair</a></li>
-		</ul>
-	</div>
+            <!-- Informações do Administrador-->
+            <li>
+                <div>
+                    <!-- foto de perfil -->
+                    <img src="" alt="imagem do funcionario">
+                    
+                    <!-- Dados textuais do usuário logado -->
+                    <div>
+                        <p>Olá, <strong>Admin</strong>!</p>
+                    </div>
+                </div>
+                
+                <!-- Links de Opções de Conta -->
+                <ul>
+                    <li><a href="perfil.php">Meu Perfil</a></li>
+                    <li><a href="configuracoes.php">Configurações</a></li>
+                    <li><a href="logout.php">Sair</a></li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
 </body>
 </html>
