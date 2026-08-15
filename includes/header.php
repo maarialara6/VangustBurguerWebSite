@@ -27,10 +27,6 @@
 
 	<div>
 		<div>
-			<strong>VGB</strong>
-		</div>
-
-		<div>
 			<p>Olá <strong>Admin</strong></p>
 		</div>
 
