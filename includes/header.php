@@ -24,5 +24,15 @@
 			Alertas Ativos (Há novos pedidos pendentes)
 		</a>
 	</div>
+
+	<div>
+		<div>
+			<strong>VGB</strong>
+		</div>
+
+		<div>
+			<p>Olá <strong>Admin</strong></p>
+		</div>
+	</div>
 </body>
 </html>
