@@ -6,48 +6,43 @@
 	<title></title>
 </head>
 <body>
-	<!-- INÍCIO DO MENU LATERAL (SIDEBAR) - ESTILO DAVUR PURÍSSIMO -->
 <nav>
-    <!-- Topo da Sidebar (Identificação idêntica ao Davur) -->
+    <!-- Topo do Sidebar-->
     <div>
-        <h2>Davur</h2>
+        <h2>VANGUST-Burguer</h2>
         <p><small>Restaurant Admin</small></p>
     </div>
 
     <hr>
 
-    <!-- MÓDULO 1: DASHBOARD (Seção Principal do Davur) -->
+    <!-- 1: DASHBOARD -->
     <div>
         <h3>Dashboard</h3>
         <ul>
             <li>
-                <!-- Seus arquivos principais cadastrados na raiz -->
                 <a href="dashboard.php"><strong>Visão Geral (Analytics)</strong></a>
             </li>
         </ul>
     </div>
 
-    <!-- MÓDULO 2: GERENCIAR PEDIDOS (Caso de Uso: Realizar/Acompanhar Pedidos) -->
+    <!-- 2: GERENCIAR PEDIDOS -->
     <div>
         <h3>Pedidos Delivery</h3>
         <ul>
             <li>
-                <!-- Arquivo pedidos.php que você já tem criado -->
                 <a href="pedidos.php">Fila de Pedidos (Order List)</a>
             </li>
             <li>
-                <!-- Link para o histórico geral mapeado no banco -->
                 <a href="historico_pedidos.php">Histórico de Vendas</a>
             </li>
         </ul>
     </div>
 
-    <!-- MÓDULO 3: GERENCIAR CARDÁPIO (Caso de Uso: Criar/Editar Pratos) -->
+    <!-- 3: GERENCIAR CARDÁPIO -->
     <div>
         <h3>Cardápio Digital</h3>
         <ul>
             <li>
-                <!-- Arquivo cardapio.php que você já tem criado -->
                 <a href="cardapio.php">Itens do Cardápio (Food Items)</a>
             </li>
             <li>
@@ -56,16 +51,14 @@
         </ul>
     </div>
 
-    <!-- MÓDULO 4: LOGÍSTICA & CLIENTES (Caso de Uso: Gerenciar Entregas e Clientes) -->
+    <!-- 4: LOGÍSTICA & CLIENTES -->
     <div>
         <h3>Pessoas & Logística</h3>
         <ul>
             <li>
-                <!-- Ator do seu diagrama: Clientes -->
                 <a href="clientes.php">Clientes Cadastrados</a>
             </li>
             <li>
-                <!-- Ator do seu diagrama: Entregador -->
                 <a href="entregadores.php">Status dos Entregadores</a>
             </li>
         </ul>
@@ -73,7 +66,7 @@
 
     <hr>
 
-    <!-- MÓDULO 5: CONFIGURAÇÕES OPERACIONAIS -->
+    <!-- 5: CONFIGURAÇÕES OPERACIONAIS -->
     <div>
         <h3>Configurações</h3>
         <ul>
@@ -86,7 +79,5 @@
         </ul>
     </div>
 </nav>
-<!-- FIM DO MENU LATERAL (SIDEBAR) -->
-
 </body>
 </html>

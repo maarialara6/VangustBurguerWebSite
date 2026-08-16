@@ -6,7 +6,8 @@
 	<title></title>
 </head>
 <body>
-	<div class="copyright">
+	<!-- Rodapé da Página -->
+    <div>
         <p>Copyright © Designed &amp; Developed by <strong>VANGUST-Burguer</strong> 2023</p>
     </div>
 </body>
