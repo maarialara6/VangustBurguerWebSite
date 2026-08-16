@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent; /* Garante que não vá sobrepor a cor de fundo do painel */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container principal do rodapé (a div que envolve o parágrafo) */
+div {
+    background-color: #ffffff; /* Fundo branco para destacar do fundo cinza do painel */
+    padding: 20px 30px;        /* Espaçamento interno confortável igual ao Davur */
+    border-top: 1px solid #efefef; /* Linha divisória sutil superior */
+    width: 100%;               /* Ocupa toda a largura da tela */
+    display: flex;
+    justify-content: center;   /* Centraliza o texto horizontalmente */
+    align-items: center;       /* Centraliza o texto verticalmente */
+}
+
+/* Estilização do texto do Copyright */
+div p {
+    font-size: 13px;           /* Tamanho de fonte padrão para rodapés modernos */
+    color: #777777;            /* Tom de cinza discreto para o texto */
+    margin: 0;                 /* Remove margens extras do parágrafo */
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* Destaque para o nome da sua hamburgueria (VANGUST-Burguer) */
+iv p strong {
+    color: #ff5e5e;            /* Tom de vermelho característico do template Davur */
+    font-weight: 600;          /* Deixa a marca em negrito */
+}
