@@ -3,13 +3,14 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/header.css">
 	<title></title>
 </head>
 <body>
 	<!-- Barra Superior -->
     <header>
         <div>
-            <!-- Espaço vazio reservado para alinhamento com o Menu Lateral (Sidebar)-->
+            <!-- Espaço vazio reservado para o Sidebar -->
         </div>
 
         <!-- Container Geral-->
