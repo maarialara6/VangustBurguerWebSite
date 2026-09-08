@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Entregadores — Vangust Burguer Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <div class="card-header-row">
+                <div>
+                    <h1 class="page-title">Entregadores</h1>
+                    <p class="page-subtitle">Equipe própria de entregas da Vangust Burguer.</p>
+                </div>
+                <button class="btn btn-primary" onclick="abrirModalNovo()"><i class="fa-solid fa-plus"></i> Novo entregador</button>
+            </div>
+
+            <div class="card-box">
+                <div class="table-wrap">
+                    <table class="vg-table">
+                        <thead>
+                            <tr><th>Nome</th><th>Telefone</th><th>Veículo</th><th>Em entrega agora</th><th>Status</th><th></th></tr>
+                        </thead>
+                        <tbody id="tbodyEntregadores"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalEntregador">
+    <div class="modal-box">
+        <h3 id="modalTitulo">Novo entregador</h3>
+        <form id="formEntregador">
+            <input type="hidden" id="f_id">
+
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="f_nome" required>
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="text" id="f_telefone">
+            </div>
+            <div class="form-group">
+                <label>Veículo</label>
+                <input type="text" id="f_veiculo" placeholder="Ex: Moto, Bicicleta, Carro">
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+    VangustAuth.exigirLogin();
+    VangustLayout.montar('entregadores.html');
+
+    function renderizarEntregadores() {
+        const entregadores = VangustDB.listarEntregadores();
+        const tbody = document.getElementById('tbodyEntregadores');
+
+        tbody.innerHTML = entregadores.length ? entregadores.map(e => `
+            <tr>
+                <td><strong>${e.nome}</strong></td>
+                <td>${e.telefone || '—'}</td>
+                <td>${e.veiculo || '—'}</td>
+                <td>${e.entregas_ativas}</td>
+                <td>
+                    <a href="#" class="badge ${e.ativo ? 'badge-entregue' : 'badge-cancelado'}" onclick="toggleAtivo(event, ${e.id_entregador})">
+                        ${e.ativo ? 'Ativo' : 'Inativo'}
+                    </a>
+                </td>
+                <td>
+                    <button class="btn btn-outline btn-sm" onclick='abrirModalEditar(${JSON.stringify(e)})'><i class="fa-solid fa-pen"></i></button>
+                </td>
+            </tr>
+        `).join('') : `<tr><td colspan="6" class="empty-state">Nenhum entregador cadastrado ainda.</td></tr>`;
+    }
+
+    function abrirModalNovo() {
+        document.getElementById('modalTitulo').textContent = 'Novo entregador';
+        document.getElementById('f_id').value = '';
+        document.getElementById('f_nome').value = '';
+        document.getElementById('f_telefone').value = '';
+        document.getElementById('f_veiculo').value = '';
+        document.getElementById('modalEntregador').classList.add('active');
+    }
+
+    function abrirModalEditar(e) {
+        document.getElementById('modalTitulo').textContent = 'Editar entregador';
+        document.getElementById('f_id').value = e.id_entregador;
+        document.getElementById('f_nome').value = e.nome;
+        document.getElementById('f_telefone').value = e.telefone;
+        document.getElementById('f_veiculo').value = e.veiculo;
+        document.getElementById('modalEntregador').classList.add('active');
+    }
+
+    function fecharModal() {
+        document.getElementById('modalEntregador').classList.remove('active');
+    }
+
+    function toggleAtivo(e, id) {
+        e.preventDefault();
+        VangustDB.toggleEntregadorAtivo(id);
+        renderizarEntregadores();
+    }
+
+    document.getElementById('formEntregador').addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!document.getElementById('f_nome').value.trim()) {
+            alert('Informe o nome do entregador.');
+            return;
+        }
+
+        const entregador = {
+            id_entregador: document.getElementById('f_id').value ? Number(document.getElementById('f_id').value) : null,
+            nome: document.getElementById('f_nome').value.trim(),
+            telefone: document.getElementById('f_telefone').value.trim(),
+            veiculo: document.getElementById('f_veiculo').value.trim(),
+        };
+
+        const editando = !!entregador.id_entregador;
+        VangustDB.salvarEntregador(entregador);
+        fecharModal();
+        renderizarEntregadores();
+        mostrarToast(editando ? 'Entregador atualizado.' : 'Entregador cadastrado.');
+    });
+
+    renderizarEntregadores();
+</script>
+</body>
+</html>

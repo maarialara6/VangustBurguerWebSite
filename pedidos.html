@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedidos — Vangust Burguer Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <h1 class="page-title">Pedidos</h1>
+            <p class="page-subtitle">Acompanhe e atualize o status dos pedidos em tempo real.</p>
+
+            <div class="filtro-status" id="filtroStatus">
+                <button data-status="" class="active">Todos</button>
+                <button data-status="recebido">Recebido</button>
+                <button data-status="em_preparo">Em preparo</button>
+                <button data-status="saiu_entrega">Saiu p/ entrega</button>
+                <button data-status="entregue">Entregue</button>
+                <button data-status="cancelado">Cancelado</button>
+            </div>
+
+            <div class="card-box">
+                <div class="table-wrap">
+                    <table class="vg-table">
+                        <thead>
+                            <tr><th>#</th><th>Cliente</th><th>Itens</th><th>Entregador</th><th>Valor</th><th>Status</th><th>Data</th></tr>
+                        </thead>
+                        <tbody id="tbodyPedidos"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+    VangustAuth.exigirLogin();
+    VangustLayout.montar('pedidos.html');
+
+    let filtroAtual = '';
+
+    function renderizarPedidos() {
+        const pedidos = VangustDB.listarPedidosDetalhados(filtroAtual);
+        const tbody = document.getElementById('tbodyPedidos');
+
+        tbody.innerHTML = pedidos.length ? pedidos.map(p => `
+            <tr>
+                <td>#${p.id_pedido}</td>
+                <td>
+                    <strong>${p.cliente_nome}</strong><br>
+                    <span style="color:var(--vg-text-light);font-size:12px;">${p.cliente_telefone}</span>
+                </td>
+                <td>
+                    <div class="detalhe-itens">
+                        ${p.itens.map(i => `${i.quantidade}x ${i.nome_produto}`).join('<br>')}
+                    </div>
+                </td>
+                <td>${p.entregador_nome || '—'}</td>
+                <td>${formatarMoeda(p.valor_total)}</td>
+                <td>
+                    <select class="status-select" onchange="atualizarStatus(${p.id_pedido}, this.value)">
+                        ${['recebido','em_preparo','saiu_entrega','entregue','cancelado'].map(s => `
+                            <option value="${s}" ${p.status === s ? 'selected' : ''}>${statusLabel(s)}</option>
+                        `).join('')}
+                    </select>
+                </td>
+                <td>${formatarData(p.data_pedido)}</td>
+            </tr>
+        `).join('') : `<tr><td colspan="7" class="empty-state">Nenhum pedido encontrado.</td></tr>`;
+    }
+
+    function atualizarStatus(idPedido, novoStatus) {
+        VangustDB.atualizarStatusPedido(idPedido, novoStatus);
+        mostrarToast(`Pedido #${idPedido} atualizado para "${statusLabel(novoStatus)}".`);
+        renderizarPedidos();
+    }
+
+    document.getElementById('filtroStatus').addEventListener('click', function (e) {
+        if (e.target.tagName !== 'BUTTON') return;
+        [...this.children].forEach(btn => btn.classList.remove('active'));
+        e.target.classList.add('active');
+        filtroAtual = e.target.dataset.status;
+        renderizarPedidos();
+    });
+
+    renderizarPedidos();
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard — Vangust Burguer Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <h1 class="page-title" id="saudacao">Olá !</h1>
+            <p class="page-subtitle">Aqui está um resumo do que está acontecendo na Vangust Burguer hoje.</p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-icon brown"><i class="fa-solid fa-burger"></i></div>
+                    <div>
+                        <div class="stat-value" id="statProdutos">0</div>
+                        <div class="stat-label">Itens no cardápio</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fa-solid fa-sack-dollar"></i></div>
+                    <div>
+                        <div class="stat-value" id="statReceita">R$ 0,00</div>
+                        <div class="stat-label">Receita total</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+                    <div>
+                        <div class="stat-value" id="statPedidosHoje">0</div>
+                        <div class="stat-label">Pedidos hoje</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon dark"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <div class="stat-value" id="statClientes">0</div>
+                        <div class="stat-label">Clientes cadastrados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card-box">
+                    <div class="card-header-row"><h3>Receita — últimos 7 dias</h3></div>
+                    <canvas id="graficoReceita" height="110"></canvas>
+                </div>
+
+                <div class="card-box">
+                    <div class="card-header-row"><h3>Pedidos por status</h3></div>
+                    <div id="listaStatus"></div>
+                </div>
+            </div>
+
+            <div class="card-box" style="margin-top:20px;">
+                <div class="card-header-row">
+                    <h3>Pedidos recentes</h3>
+                    <a href="pedidos.html" class="btn btn-outline btn-sm">Ver todos</a>
+                </div>
+                <div class="table-wrap">
+                    <table class="vg-table">
+                        <thead>
+                            <tr><th>#</th><th>Cliente</th><th>Valor</th><th>Status</th><th>Data</th></tr>
+                        </thead>
+                        <tbody id="tbodyPedidosRecentes"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+    VangustAuth.exigirLogin();
+    VangustLayout.montar('dashboard.html');
+
+    document.getElementById('saudacao').textContent = `Olá, ${VangustDB.getUsuarioAdmin().nome}`;
+
+    const dados = VangustDB.getEstatisticasDashboard();
+
+    document.getElementById('statProdutos').textContent = dados.totalProdutosAtivos;
+    document.getElementById('statReceita').textContent = formatarMoeda(dados.receitaTotal);
+    document.getElementById('statPedidosHoje').textContent = dados.pedidosHoje;
+    document.getElementById('statClientes').textContent = dados.totalClientes;
+
+    // Pedidos por status
+    const ordemStatus = ['recebido', 'em_preparo', 'saiu_entrega', 'entregue', 'cancelado'];
+    document.getElementById('listaStatus').innerHTML = ordemStatus.map(s => `
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--vg-cream-dark);font-size:14px;">
+            <span class="badge badge-${s}">${statusLabel(s)}</span>
+            <strong>${dados.statusCount[s] || 0}</strong>
+        </div>
+    `).join('');
+
+    // Pedidos recentes
+    const tbody = document.getElementById('tbodyPedidosRecentes');
+    tbody.innerHTML = dados.pedidosRecentes.length
+        ? dados.pedidosRecentes.map(p => `
+            <tr>
+                <td>#${p.id_pedido}</td>
+                <td>${p.cliente_nome}</td>
+                <td>${formatarMoeda(p.valor_total)}</td>
+                <td><span class="badge badge-${p.status}">${statusLabel(p.status)}</span></td>
+                <td>${formatarData(p.data_pedido)}</td>
+            </tr>
+        `).join('')
+        : `<tr><td colspan="5" class="empty-state">Nenhum pedido ainda.</td></tr>`;
+
+    new Chart(document.getElementById('graficoReceita'), {
+        type: 'line',
+        data: {
+            labels: dados.labels,
+            datasets: [{
+                label: 'Receita (R$)',
+                data: dados.valores,
+                borderColor: '#c17f36',
+                backgroundColor: 'rgba(217,154,82,0.15)',
+                tension: 0.35,
+                fill: true,
+                pointBackgroundColor: '#c17f36',
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+</script>
+</body>
+</html>

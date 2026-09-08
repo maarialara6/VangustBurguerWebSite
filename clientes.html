@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Clientes — Vangust Burguer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <h1 class="page-title">Clientes</h1>
+            <p class="page-subtitle">Base de clientes cadastrados no app.</p>
+
+            <div class="card-box">
+                <div class="table-wrap">
+                    <table class="vg-table">
+                        <thead>
+                            <tr><th>Cliente</th><th>Contato</th><th>Pedidos</th><th>Total gasto</th></tr>
+                        </thead>
+                        <tbody id="tbodyClientes"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+    VangustAuth.exigirLogin();
+    VangustLayout.montar('clientes.html');
+
+    const clientes = VangustDB.listarClientesComResumo();
+    const tbody = document.getElementById('tbodyClientes');
+
+    tbody.innerHTML = clientes.length ? clientes.map(c => `
+        <tr>
+            <td><strong>${c.nome}</strong></td>
+            <td>
+                ${c.email}<br>
+                <span style="color:var(--vg-text-light);font-size:12px;">${c.telefone}</span>
+            </td>
+            <td>${c.total_pedidos}</td>
+            <td>${formatarMoeda(c.total_gasto)}</td>
+        </tr>
+    `).join('') : `<tr><td colspan="4" class="empty-state">Nenhum cliente cadastrado ainda.</td></tr>`;
+</script>
+</body>
+</html>

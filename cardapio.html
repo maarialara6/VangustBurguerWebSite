@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cardápio — Vangust Burguer Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+<body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <div class="card-header-row">
+                <div>
+                    <h1 class="page-title">Cardápio</h1>
+                    <p class="page-subtitle">Gerencie os produtos exibidos no app do cliente.</p>
+                </div>
+                <button class="btn btn-primary" onclick="abrirModalNovo()"><i class="fa-solid fa-plus"></i> Novo produto</button>
+            </div>
+
+            <div class="card-box">
+                <div class="table-wrap">
+                    <table class="vg-table">
+                        <thead>
+                            <tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th></th></tr>
+                        </thead>
+                        <tbody id="tbodyProdutos"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+
+<!-- Modal Novo/Editar Produto -->
+<div class="modal-overlay" id="modalProduto">
+    <div class="modal-box">
+        <h3 id="modalTitulo">Novo produto</h3>
+        <form id="formProduto">
+            <input type="hidden" id="f_id_produto">
+
+            <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="f_nome" required>
+            </div>
+            <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="f_descricao" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Categoria</label>
+                <input type="text" id="f_categoria" placeholder="Ex: Combos, Ofertas, Opções veganas" required>
+            </div>
+            <div class="form-group">
+                <label>Preço (R$)</label>
+                <input type="text" id="f_preco" placeholder="Ex: 29,90" required>
+            </div>
+            <div class="form-group">
+                <label>Estoque</label>
+                <input type="number" id="f_estoque" min="0" value="0" required>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+    VangustAuth.exigirLogin();
+    VangustLayout.montar('cardapio.html');
+
+    function renderizarProdutos() {
+        const produtos = VangustDB.listarProdutos();
+        const tbody = document.getElementById('tbodyProdutos');
+
+        tbody.innerHTML = produtos.length ? produtos.map(p => `
+            <tr>
+                <td>
+                    <strong>${p.nome}</strong><br>
+                    <span style="color:var(--vg-text-light);font-size:12px;">${p.descricao || ''}</span>
+                </td>
+                <td>${p.categoria}</td>
+                <td>${formatarMoeda(p.preco)}</td>
+                <td>${p.estoque}</td>
+                <td>
+                    <a href="#" class="badge ${p.ativo ? 'badge-entregue' : 'badge-cancelado'}" onclick="toggleAtivo(event, ${p.id_produto})">
+                        ${p.ativo ? 'Ativo' : 'Inativo'}
+                    </a>
+                </td>
+                <td style="white-space:nowrap;">
+                    <button class="btn btn-outline btn-sm" onclick='abrirModalEditar(${JSON.stringify(p)})'><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn btn-danger btn-sm" onclick="excluirProduto(${p.id_produto})"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('') : `<tr><td colspan="6" class="empty-state">Nenhum produto cadastrado ainda.</td></tr>`;
+    }
+
+    function abrirModalNovo() {
+        document.getElementById('modalTitulo').textContent = 'Novo produto';
+        document.getElementById('f_id_produto').value = '';
+        document.getElementById('f_nome').value = '';
+        document.getElementById('f_descricao').value = '';
+        document.getElementById('f_categoria').value = '';
+        document.getElementById('f_preco').value = '';
+        document.getElementById('f_estoque').value = 0;
+        document.getElementById('modalProduto').classList.add('active');
+    }
+
+    function abrirModalEditar(p) {
+        document.getElementById('modalTitulo').textContent = 'Editar produto';
+        document.getElementById('f_id_produto').value = p.id_produto;
+        document.getElementById('f_nome').value = p.nome;
+        document.getElementById('f_descricao').value = p.descricao;
+        document.getElementById('f_categoria').value = p.categoria;
+        document.getElementById('f_preco').value = String(p.preco).replace('.', ',');
+        document.getElementById('f_estoque').value = p.estoque;
+        document.getElementById('modalProduto').classList.add('active');
+    }
+
+    function fecharModal() {
+        document.getElementById('modalProduto').classList.remove('active');
+    }
+
+    function toggleAtivo(e, id) {
+        e.preventDefault();
+        VangustDB.toggleProdutoAtivo(id);
+        renderizarProdutos();
+    }
+
+    function excluirProduto(id) {
+        if (!confirm('Remover este produto do cardápio?')) return;
+        VangustDB.excluirProduto(id);
+        renderizarProdutos();
+        mostrarToast('Produto removido do cardápio.');
+    }
+
+    document.getElementById('formProduto').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const preco = parseFloat(document.getElementById('f_preco').value.replace(',', '.'));
+
+        if (!document.getElementById('f_nome').value.trim() || !document.getElementById('f_categoria').value.trim() || !(preco > 0)) {
+            alert('Preencha nome, categoria e um preço válido.');
+            return;
+        }
+
+        const produto = {
+            id_produto: document.getElementById('f_id_produto').value ? Number(document.getElementById('f_id_produto').value) : null,
+            nome: document.getElementById('f_nome').value.trim(),
+            descricao: document.getElementById('f_descricao').value.trim(),
+            categoria: document.getElementById('f_categoria').value.trim(),
+            preco: preco,
+            estoque: Number(document.getElementById('f_estoque').value),
+        };
+
+        const editando = !!produto.id_produto;
+        VangustDB.salvarProduto(produto);
+        fecharModal();
+        renderizarProdutos();
+        mostrarToast(editando ? 'Produto atualizado com sucesso.' : 'Produto cadastrado com sucesso.');
+    });
+
+    renderizarProdutos();
+</script>
+</body>
+</html>

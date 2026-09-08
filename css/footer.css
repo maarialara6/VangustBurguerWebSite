@@ -1,0 +1,9 @@
+.app-footer {
+    text-align: center;
+    padding: 18px;
+    color: var(--vg-text-light);
+    font-size: 13px;
+    margin-top: auto;
+}
+
+.app-footer strong { color: var(--vg-brown); }

@@ -1,0 +1,59 @@
+    <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Login — Vangust Burguer Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <img src="img/logo.png" alt="Vangust Burguer" onerror="this.style.display='none'">
+            <h1>Vangust Burguer</h1>
+            <p>Painel Administrativo</p>
+        </div>
+
+        <div id="mensagemErro" class="alert alert-error" style="display:none;"></div>
+
+        <form id="formLogin">
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="email" placeholder="Digite seu e-mail" required>
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="senha" placeholder="Digite sua senha" required>
+            </div>
+            <button type="submit" class="btn btn-dark">Entrar</button>
+        </form>
+
+        <div class="login-hint">
+            use <strong>admin@vangustburguer.com</strong> / <strong>admin123</strong>
+        </div>
+    </div>
+
+    <script src="js/store.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        if (VangustAuth.estaLogado()) {
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('formLogin').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value;
+            const erroBox = document.getElementById('mensagemErro');
+
+            if (VangustAuth.login(email, senha)) {
+                window.location.href = 'dashboard.html';
+            } else {
+                erroBox.textContent = 'E-mail ou senha inválidos.';
+                erroBox.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
