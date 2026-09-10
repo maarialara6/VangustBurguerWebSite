@@ -17,7 +17,7 @@ const VangustLayout = (() => {
         return `
             <aside class="sidebar">
                 <div class="sidebar-logo">
-                    <img src="img/logo-2.png" alt="Vangust Burguer" onerror="this.style.display='none'">
+                    <img src="img/logo.png" alt="Vangust Burguer" onerror="this.style.display='none'">
                 </div>
                 <ul class="sidebar-nav">${itensHtml}</ul>
                 <div class="sidebar-footer">
@@ -38,13 +38,13 @@ const VangustLayout = (() => {
                 </div>
                 <div class="topbar-right">
                     <i class="fa-regular fa-bell" style="font-size:18px;color:var(--vg-brown)"></i>
-                    <div class="topbar-user">
+                    <a href="perfil.html" class="topbar-user" style="cursor:pointer;">
                         <div class="topbar-avatar">${inicial}</div>
                         <div class="topbar-user-info">
                             <strong>${usuario.nome}</strong>
                             <span>Administrador</span>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </header>
         `;

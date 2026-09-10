@@ -92,6 +92,12 @@ const VangustDB = (() => {
         getUsuarioAdmin() {
             return carregar().usuarioAdmin;
         },
+        atualizarUsuarioAdmin(dados) {
+            const db = carregar();
+            db.usuarioAdmin = { ...db.usuarioAdmin, ...dados };
+            salvar(db);
+            return db.usuarioAdmin;
+        },
 
         // ---------- Produtos ----------
         listarProdutos() {

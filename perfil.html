@@ -1,11 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title></title>
+    <meta charset="UTF-8">
+    <title>Meu Perfil — Vangust Burguer Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
 </head>
 <body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
 
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <h1 class="page-title">Meu Perfil</h1>
+            <p class="page-subtitle">Visualize e atualize seus dados de administrador.</p>
+
+            <div class="grid-2">
+                <div class="card-box">
+                    <div id="mensagemSucesso" class="alert alert-success" style="display:none;">Dados atualizados com sucesso.</div>
+
+                    <form id="formPerfil">
+                        <div class="form-group">
+                            <label>Nome</label>
+                            <input type="text" id="f_nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label>E-mail</label>
+                            <input type="email" id="f_email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nova senha</label>
+                            <input type="password" id="f_senha" placeholder="Deixe em branco para manter a atual">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                    </form>
+                </div>
+
+                <div class="card-box" style="text-align:center;">
+                    <div class="topbar-avatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 16px;" id="avatarGrande"></div>
+                    <h3 style="margin:0 0 4px;color:var(--vg-brown-dark);" id="nomeExibido"></h3>
+                    <p style="color:var(--vg-text-light);margin:0;">Administrador</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/layout.js"></script>
+<script>
+    VangustAuth.exigirLogin();
+    VangustLayout.montar('perfil.html');
+
+    function carregarDados() {
+        const usuario = VangustDB.getUsuarioAdmin();
+        document.getElementById('f_nome').value = usuario.nome;
+        document.getElementById('f_email').value = usuario.email;
+        document.getElementById('f_senha').value = '';
+        document.getElementById('nomeExibido').textContent = usuario.nome;
+        document.getElementById('avatarGrande').textContent = usuario.nome.charAt(0).toUpperCase();
+    }
+
+    document.getElementById('formPerfil').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const nome = document.getElementById('f_nome').value.trim();
+        const email = document.getElementById('f_email').value.trim();
+        const senha = document.getElementById('f_senha').value;
+
+        if (!nome || !email) {
+            alert('Preencha nome e e-mail.');
+            return;
+        }
+
+        const dados = { nome, email };
+        if (senha) dados.senha = senha;
+
+        VangustDB.atualizarUsuarioAdmin(dados);
+        carregarDados();
+
+        const msg = document.getElementById('mensagemSucesso');
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+
+        mostrarToast('Perfil atualizado com sucesso.');
+
+        // Atualiza nome exibido no header sem precisar recarregar a página
+        VangustLayout.montar('perfil.html');
+    });
+
+    carregarDados();
+</script>
 </body>
 </html>
