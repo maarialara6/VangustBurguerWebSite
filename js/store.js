@@ -8,6 +8,8 @@ const VangustDB = (() => {
                 nome: 'Gustavo Freire',
                 email: 'admin@vangustburguer.com',
                 senha: 'admin123', // apenas para o protótipo em memória; no backend real, NUNCA em texto puro
+                foto: null, // string base64 da imagem, quando definida pelo usuário
+                data_cadastro: '2022-04-16T00:00:00.000Z',
             },
             clientes: [
                 { id_cliente: 1, nome: 'João Pedro Alves', email: 'joao@email.com', telefone: '(11) 99999-0001' },
@@ -59,6 +61,20 @@ const VangustDB = (() => {
         return d.toISOString();
     }
 
+    function migrar(db) {
+        let alterado = false;
+        if (db.usuarioAdmin.foto === undefined) {
+            db.usuarioAdmin.foto = null;
+            alterado = true;
+        }
+        if (!db.usuarioAdmin.data_cadastro) {
+            db.usuarioAdmin.data_cadastro = '2022-04-16T00:00:00.000Z';
+            alterado = true;
+        }
+        if (alterado) salvar(db);
+        return db;
+    }
+
     function carregar() {
         const bruto = localStorage.getItem(CHAVE_STORAGE);
         if (!bruto) {
@@ -67,7 +83,7 @@ const VangustDB = (() => {
             return inicial;
         }
         try {
-            return JSON.parse(bruto);
+            return migrar(JSON.parse(bruto));
         } catch (e) {
             const inicial = dadosIniciais();
             salvar(inicial);

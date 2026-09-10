@@ -30,6 +30,9 @@ const VangustLayout = (() => {
     function renderHeader() {
         const usuario = VangustDB.getUsuarioAdmin();
         const inicial = usuario.nome.charAt(0).toUpperCase();
+        const avatarHtml = usuario.foto
+            ? `<img src="${usuario.foto}" alt="${usuario.nome}" class="topbar-avatar" style="object-fit:cover;">`
+            : `<div class="topbar-avatar">${inicial}</div>`;
         return `
             <header class="topbar">
                 <div class="topbar-search">
@@ -39,7 +42,7 @@ const VangustLayout = (() => {
                 <div class="topbar-right">
                     <i class="fa-regular fa-bell" style="font-size:18px;color:var(--vg-brown)"></i>
                     <a href="perfil.html" class="topbar-user" style="cursor:pointer;">
-                        <div class="topbar-avatar">${inicial}</div>
+                        ${avatarHtml}
                         <div class="topbar-user-info">
                             <strong>${usuario.nome}</strong>
                             <span>Administrador</span>

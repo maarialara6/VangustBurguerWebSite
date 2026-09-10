@@ -9,6 +9,133 @@
     <link rel="stylesheet" href="css/sidebar.css">
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/footer.css">
+    <style>
+        .perfil-card {
+            max-width: 460px;
+            margin: 0 auto;
+            background: var(--vg-white);
+            border-radius: var(--vg-radius);
+            box-shadow: var(--vg-shadow);
+            overflow: hidden;
+        }
+
+        .perfil-banner {
+            height: 110px;
+            background: linear-gradient(135deg, var(--vg-tan), var(--vg-cream-dark));
+            margin: 20px 20px 0;
+            border-radius: 12px;
+        }
+
+        .perfil-avatar-wrap {
+            display: flex;
+            justify-content: center;
+            margin-top: -55px;
+        }
+
+        .perfil-avatar-grande {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--vg-tan);
+            color: var(--vg-brown-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 36px;
+            border: 4px solid var(--vg-white);
+            box-shadow: var(--vg-shadow);
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .perfil-nome {
+            text-align: center;
+            margin: 14px 0 2px;
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--vg-brown-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .perfil-nome i.fa-circle-check { color: #2e8b57; font-size: 15px; }
+
+        .perfil-email {
+            text-align: center;
+            color: var(--vg-text-light);
+            font-size: 13px;
+            margin: 0 0 20px;
+        }
+
+        .perfil-divisor {
+            border: none;
+            border-top: 1px solid var(--vg-cream-dark);
+            margin: 0 20px;
+        }
+
+        .perfil-info-list { padding: 4px 24px 24px; }
+
+        .perfil-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--vg-cream-dark);
+            font-size: 14px;
+        }
+        .perfil-info-row:last-child { border-bottom: none; }
+
+        .perfil-info-row span.label { color: var(--vg-text-light); }
+
+        .perfil-info-row .valor {
+            font-weight: 600;
+            color: var(--vg-brown-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .perfil-badge {
+            padding: 3px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .perfil-badge.ativo { background: #d9f2e2; color: #1f7a45; }
+        .perfil-badge.cargo { background: var(--vg-cream); color: var(--vg-brown); }
+
+        .perfil-acoes {
+            padding: 0 24px 24px;
+            text-align: center;
+        }
+
+        /* ---- Upload de foto (modo edição) ---- */
+        .perfil-foto-upload {
+            position: relative;
+            width: 100px;
+            margin: 0 auto;
+        }
+        .perfil-foto-upload label.trocar-foto {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--vg-brown-dark);
+            color: var(--vg-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            border: 2px solid var(--vg-white);
+        }
+    </style>
 </head>
 <body>
 <div class="app-shell">
@@ -19,13 +146,76 @@
 
         <div class="page-body">
             <h1 class="page-title">Meu Perfil</h1>
-            <p class="page-subtitle">Visualize e atualize seus dados de administrador.</p>
+            <p class="page-subtitle">Visualize e gerencie seus dados de administrador.</p>
 
-            <div class="grid-2">
-                <div class="card-box">
-                    <div id="mensagemSucesso" class="alert alert-success" style="display:none;">Dados atualizados com sucesso.</div>
+            <div id="mensagemSucesso" class="alert alert-success" style="max-width:460px;margin:0 auto 18px;display:none;">
+                Dados atualizados com sucesso.
+            </div>
 
+            <div class="perfil-card">
+
+                <!-- MODO VISUALIZAÇÃO -->
+                <div id="viewMode">
+                    <div class="perfil-banner"></div>
+                    <div class="perfil-avatar-wrap">
+                        <div class="perfil-avatar-grande" id="viewAvatar"></div>
+                    </div>
+                    <div class="perfil-nome">
+                        <span id="viewNome"></span>
+                        <i class="fa-solid fa-circle-check" title="Administrador verificado"></i>
+                    </div>
+                    <p class="perfil-email" id="viewEmail"></p>
+
+                    <hr class="perfil-divisor">
+
+                    <div class="perfil-info-list">
+                        <div class="perfil-info-row">
+                            <span class="label">Cargo:</span>
+                            <span class="valor"><i class="fa-solid fa-user-shield" style="color:var(--vg-brown-light);"></i> Administrador</span>
+                        </div>
+                        <div class="perfil-info-row">
+                            <span class="label">E-mail:</span>
+                            <span class="valor" id="viewEmailRow"></span>
+                        </div>
+                        <div class="perfil-info-row">
+                            <span class="label">Senha:</span>
+                            <span class="valor">••••••••<i class="fa-solid fa-lock" style="color:var(--vg-text-light);font-size:12px;"></i></span>
+                        </div>
+                        <div class="perfil-info-row">
+                            <span class="label">Status:</span>
+                            <span class="valor"><span class="perfil-badge ativo">Ativo</span></span>
+                        </div>
+                        <div class="perfil-info-row">
+                            <span class="label">Nível de acesso:</span>
+                            <span class="valor"><span class="perfil-badge cargo">Acesso total</span></span>
+                        </div>
+                        <div class="perfil-info-row">
+                            <span class="label">Membro desde:</span>
+                            <span class="valor"><i class="fa-regular fa-calendar" style="color:var(--vg-text-light);"></i> <span id="viewDataCadastro"></span></span>
+                        </div>
+                    </div>
+
+                    <div class="perfil-acoes">
+                        <button type="button" class="btn btn-primary" onclick="ativarEdicao()">
+                            <i class="fa-solid fa-pen"></i> Editar perfil
+                        </button>
+                    </div>
+                </div>
+
+                <!-- MODO EDIÇÃO-->
+                <div id="editMode" style="display:none;padding:24px;">
                     <form id="formPerfil">
+                        <div class="perfil-foto-upload">
+                            <div class="perfil-avatar-grande" id="editAvatar"></div>
+                            <label class="trocar-foto" for="f_foto" title="Trocar foto">
+                                <i class="fa-solid fa-camera"></i>
+                            </label>
+                            <input type="file" id="f_foto" accept="image/*" style="display:none;">
+                        </div>
+                        <p style="text-align:center;color:var(--vg-text-light);font-size:12px;margin-top:10px;margin-bottom:22px;">
+                            Clique no ícone da câmera para trocar a foto
+                        </p>
+
                         <div class="form-group">
                             <label>Nome</label>
                             <input type="text" id="f_nome" required>
@@ -39,15 +229,13 @@
                             <input type="password" id="f_senha" placeholder="Deixe em branco para manter a atual">
                         </div>
 
-                        <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-outline" onclick="cancelarEdicao()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                        </div>
                     </form>
                 </div>
 
-                <div class="card-box" style="text-align:center;">
-                    <div class="topbar-avatar" style="width:80px;height:80px;font-size:32px;margin:0 auto 16px;" id="avatarGrande"></div>
-                    <h3 style="margin:0 0 4px;color:var(--vg-brown-dark);" id="nomeExibido"></h3>
-                    <p style="color:var(--vg-text-light);margin:0;">Administrador</p>
-                </div>
             </div>
         </div>
 
@@ -63,14 +251,67 @@
     VangustAuth.exigirLogin();
     VangustLayout.montar('perfil.html');
 
+    let fotoTemporaria = null; // guarda a nova foto (base64) até o usuário salvar
+
+    function preencherAvatar(elementoId, usuario) {
+        const el = document.getElementById(elementoId);
+        if (usuario.foto) {
+            el.style.backgroundImage = `url('${usuario.foto}')`;
+            el.textContent = '';
+        } else {
+            el.style.backgroundImage = '';
+            el.textContent = usuario.nome.charAt(0).toUpperCase();
+        }
+    }
+
     function carregarDados() {
         const usuario = VangustDB.getUsuarioAdmin();
+
+        // Modo visualização
+        document.getElementById('viewNome').textContent = usuario.nome;
+        document.getElementById('viewEmail').textContent = usuario.email;
+        document.getElementById('viewEmailRow').textContent = usuario.email;
+        document.getElementById('viewDataCadastro').textContent = formatarData(usuario.data_cadastro).split(' ')[0];
+        preencherAvatar('viewAvatar', usuario);
+
+        // Modo edição (campos)
         document.getElementById('f_nome').value = usuario.nome;
         document.getElementById('f_email').value = usuario.email;
         document.getElementById('f_senha').value = '';
-        document.getElementById('nomeExibido').textContent = usuario.nome;
-        document.getElementById('avatarGrande').textContent = usuario.nome.charAt(0).toUpperCase();
+        preencherAvatar('editAvatar', usuario);
+
+        fotoTemporaria = null;
     }
+
+    function ativarEdicao() {
+        document.getElementById('viewMode').style.display = 'none';
+        document.getElementById('editMode').style.display = 'block';
+    }
+
+    function cancelarEdicao() {
+        carregarDados();
+        document.getElementById('editMode').style.display = 'none';
+        document.getElementById('viewMode').style.display = 'block';
+    }
+
+    document.getElementById('f_foto').addEventListener('change', function (e) {
+        const arquivo = e.target.files[0];
+        if (!arquivo) return;
+
+        if (!arquivo.type.startsWith('image/')) {
+            alert('Selecione um arquivo de imagem válido.');
+            return;
+        }
+
+        const leitor = new FileReader();
+        leitor.onload = function (ev) {
+            fotoTemporaria = ev.target.result; // base64
+            const el = document.getElementById('editAvatar');
+            el.style.backgroundImage = `url('${fotoTemporaria}')`;
+            el.textContent = '';
+        };
+        leitor.readAsDataURL(arquivo);
+    });
 
     document.getElementById('formPerfil').addEventListener('submit', function (e) {
         e.preventDefault();
@@ -86,9 +327,13 @@
 
         const dados = { nome, email };
         if (senha) dados.senha = senha;
+        if (fotoTemporaria) dados.foto = fotoTemporaria;
 
         VangustDB.atualizarUsuarioAdmin(dados);
         carregarDados();
+
+        document.getElementById('editMode').style.display = 'none';
+        document.getElementById('viewMode').style.display = 'block';
 
         const msg = document.getElementById('mensagemSucesso');
         msg.style.display = 'block';
@@ -96,7 +341,7 @@
 
         mostrarToast('Perfil atualizado com sucesso.');
 
-        // Atualiza nome exibido no header sem precisar recarregar a página
+        // Atualiza avatar/nome no header sem precisar recarregar a página
         VangustLayout.montar('perfil.html');
     });
 
