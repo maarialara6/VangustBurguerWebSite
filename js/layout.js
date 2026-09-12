@@ -17,7 +17,7 @@ const VangustLayout = (() => {
         return `
             <aside class="sidebar">
                 <div class="sidebar-logo">
-                    <img src="img/logo.png" alt="Vangust Burguer" onerror="this.style.display='none'">
+                    <img src="img/logo-2.png" alt="Vangust Burguer" onerror="this.style.display='none'">
                 </div>
                 <ul class="sidebar-nav">${itensHtml}</ul>
                 <div class="sidebar-footer">
@@ -112,7 +112,7 @@ const VangustLayout = (() => {
 
         input.addEventListener('input', () => {
             const termo = input.value.trim();
-            if (termo.length < 2) {
+            if (termo.length < 1) {
                 resultsBox.classList.remove('show');
                 resultsBox.innerHTML = '';
                 return;
@@ -123,7 +123,7 @@ const VangustLayout = (() => {
         });
 
         input.addEventListener('focus', () => {
-            if (input.value.trim().length >= 2) resultsBox.classList.add('show');
+            if (input.value.trim().length >= 1) resultsBox.classList.add('show');
         });
 
         document.addEventListener('click', (e) => {
