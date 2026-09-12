@@ -7,8 +7,8 @@ const VangustDB = (() => {
                 id_usuario: 1,
                 nome: 'Gustavo Freire',
                 email: 'admin@vangustburguer.com',
-                senha: 'admin123', 
-                foto: null, // string base64 da imagem, quando definida pelo usuário
+                senha: 'admin123',
+                foto: null, // string base64 da imagem
                 data_cadastro: '2022-04-16T00:00:00.000Z',
             },
             clientes: [
@@ -100,7 +100,6 @@ const VangustDB = (() => {
     }
 
     return {
-        // ---------- Autenticação ----------
         autenticar(email, senha) {
             const db = carregar();
             return db.usuarioAdmin.email === email && db.usuarioAdmin.senha === senha ? db.usuarioAdmin : null;
@@ -115,7 +114,33 @@ const VangustDB = (() => {
             return db.usuarioAdmin;
         },
 
-        // ---------- Produtos ----------
+        buscarGlobal(termo) {
+            const t = termo.toLowerCase().trim();
+            const db = carregar();
+
+            const produtos = db.produtos
+                .filter(p => p.nome.toLowerCase().includes(t) || p.categoria.toLowerCase().includes(t))
+                .slice(0, 5);
+
+            const clientes = db.clientes
+                .filter(c =>
+                    c.nome.toLowerCase().includes(t) ||
+                    c.email.toLowerCase().includes(t) ||
+                    (c.telefone || '').includes(t)
+                )
+                .slice(0, 5);
+
+            const pedidos = db.pedidos
+                .filter(p => {
+                    const cliente = db.clientes.find(c => c.id_cliente == p.id_cliente);
+                    return String(p.id_pedido).includes(t) || (cliente && cliente.nome.toLowerCase().includes(t));
+                })
+                .map(p => ({ ...p, cliente_nome: db.clientes.find(c => c.id_cliente == p.id_cliente)?.nome || '—' }))
+                .slice(0, 5);
+
+            return { produtos, clientes, pedidos };
+        },
+
         listarProdutos() {
             return carregar().produtos.slice().sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nome.localeCompare(b.nome));
         },
@@ -143,7 +168,6 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        // ---------- Entregadores ----------
         listarEntregadores() {
             const db = carregar();
             return db.entregadores.map(e => ({
@@ -170,7 +194,6 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        // ---------- Clientes ----------
         listarClientesComResumo() {
             const db = carregar();
             return db.clientes.map(c => {
@@ -182,7 +205,6 @@ const VangustDB = (() => {
             }).sort((a, b) => a.nome.localeCompare(b.nome));
         },
 
-        // ---------- Pedidos ----------
         listarPedidosDetalhados(filtroStatus = '') {
             const db = carregar();
             return db.pedidos
@@ -210,7 +232,6 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        // ---------- Dashboard ----------
         getEstatisticasDashboard() {
             const db = carregar();
             const hoje = new Date().toDateString();
@@ -248,7 +269,6 @@ const VangustDB = (() => {
             return { totalProdutosAtivos, totalClientes, pedidosHoje, receitaTotal, statusCount, labels, valores, pedidosRecentes };
         },
 
-        // ---------- Utilitário (botão "resetar dados de exemplo") ----------
         resetar() {
             salvar(dadosIniciais());
         },
