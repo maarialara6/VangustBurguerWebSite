@@ -7,7 +7,7 @@ const VangustDB = (() => {
                 id_usuario: 1,
                 nome: 'Gustavo Freire',
                 email: 'admin@vangustburguer.com',
-                senha: 'admin123', // apenas para o protótipo em memória; no backend real, NUNCA em texto puro
+                senha: 'admin123', 
                 foto: null, // string base64 da imagem, quando definida pelo usuário
                 data_cadastro: '2022-04-16T00:00:00.000Z',
             },

@@ -32,7 +32,7 @@ a { text-decoration: none; color: inherit; }
     min-height: 100vh;
 }
 
-/* ---------- Conteúdo principal ---------- */
+/* Conteúdo principal */
 .main-content {
     flex: 1;
     margin-left: 250px;
@@ -58,7 +58,7 @@ a { text-decoration: none; color: inherit; }
     font-size: 14px;
 }
 
-/* ---------- Cards genéricos ---------- */
+/* Cards genéricos */
 .card-box {
     background: var(--vg-white);
     border-radius: var(--vg-radius);
@@ -137,7 +137,7 @@ a { text-decoration: none; color: inherit; }
     color: var(--vg-brown-dark);
 }
 
-/* ---------- Botões ---------- */
+/* Botões */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -158,7 +158,7 @@ a { text-decoration: none; color: inherit; }
 .btn-danger { background: var(--vg-danger); color: var(--vg-white); }
 .btn-sm { padding: 6px 12px; font-size: 12px; }
 
-/* ---------- Tabelas ---------- */
+/* Tabelas */
 .table-wrap { overflow-x: auto; }
 
 table.vg-table {
@@ -186,7 +186,7 @@ table.vg-table td {
 
 table.vg-table tr:hover td { background: var(--vg-cream); }
 
-/* ---------- Badges de status ---------- */
+/* Badges de status */
 .badge {
     display: inline-block;
     padding: 4px 12px;
@@ -200,7 +200,7 @@ table.vg-table tr:hover td { background: var(--vg-cream); }
 .badge-entregue { background: #d9f2e2; color: #1f7a45; }
 .badge-cancelado { background: #fbdcd6; color: #a3372a; }
 
-/* ---------- Formulários / Modais ---------- */
+/* Formulários / Modais */
 .form-group { margin-bottom: 16px; }
 .form-group label {
     display: block;
@@ -275,7 +275,7 @@ table.vg-table tr:hover td { background: var(--vg-cream); }
     padding: 40px 20px;
 }
 
-/* ---------- Login ---------- */
+/* Login */
 .login-page {
     display: flex;
     align-items: center;
@@ -305,7 +305,7 @@ table.vg-table tr:hover td { background: var(--vg-cream); }
     padding: 10px;
 }
 
-/* ---------- Filtro de status (pedidos) ---------- */
+/* Filtro de status (pedidos) */
 .filtro-status { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
 .filtro-status button {
     padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 600;
