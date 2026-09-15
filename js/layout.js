@@ -17,7 +17,7 @@ const VangustLayout = (() => {
         return `
             <aside class="sidebar">
                 <div class="sidebar-logo">
-                    <img src="img/logo-2.png" alt="Vangust Burguer" onerror="this.style.display='none'">
+                    <img src="img/logo.png" alt="Vangust Burguer" onerror="this.style.display='none'">
                 </div>
                 <ul class="sidebar-nav">${itensHtml}</ul>
                 <div class="sidebar-footer">
@@ -41,7 +41,12 @@ const VangustLayout = (() => {
                     <div class="topbar-search-results" id="topbarSearchResults"></div>
                 </div>
                 <div class="topbar-right">
-                    <i class="fa-regular fa-bell" style="font-size:18px;color:var(--vg-brown)"></i>
+                    <div class="topbar-notif-wrap" id="topbarNotifWrap">
+                        <button type="button" class="topbar-notif-btn" id="topbarNotifBtn" title="Notificações">
+                            <i class="fa-regular fa-bell"></i>
+                        </button>
+                        <div class="topbar-notif-dropdown" id="topbarNotifDropdown"></div>
+                    </div>
                     <a href="perfil.html" class="topbar-user" style="cursor:pointer;">
                         ${avatarHtml}
                         <div class="topbar-user-info">
@@ -133,6 +138,108 @@ const VangustLayout = (() => {
         });
     }
 
+    const ICONES_NOTIF = {
+        pedido: 'fa-receipt',
+        estoque: 'fa-box-open',
+        sistema: 'fa-circle-info',
+    };
+
+    function renderNotifItem(n) {
+        const icone = ICONES_NOTIF[n.tipo] || 'fa-bell';
+        return `
+            <div class="topbar-notif-item ${n.lida ? '' : 'nao-lida'}" data-id="${n.id}">
+                <div class="topbar-notif-icon"><i class="fa-solid ${icone}"></i></div>
+                <div class="topbar-notif-texto">
+                    <p>${n.mensagem}</p>
+                    <span>${formatarData(n.data)}</span>
+                </div>
+                ${n.lida ? '' : '<span class="topbar-notif-dot"></span>'}
+            </div>
+        `;
+    }
+
+    function renderNotifDropdown() {
+        const notificacoes = VangustDB.listarNotificacoes();
+        const corpo = notificacoes.length
+            ? notificacoes.map(renderNotifItem).join('')
+            : `<div class="topbar-search-empty">Nenhuma notificação por aqui.</div>`;
+
+        return `
+            <div class="topbar-notif-header">
+                <strong>Notificações</strong>
+                <a href="#" id="btnMarcarTodasLidas">Marcar todas como lidas</a>
+            </div>
+            <div class="topbar-notif-lista">${corpo}</div>
+        `;
+    }
+
+    function atualizarBadgeNotificacoes() {
+        const btn = document.getElementById('topbarNotifBtn');
+        if (!btn) return;
+        const naoLidas = VangustDB.contarNotificacoesNaoLidas();
+        let badge = btn.querySelector('.topbar-notif-badge');
+
+        if (naoLidas > 0) {
+            if (!badge) {
+                badge = document.createElement('span');
+                badge.className = 'topbar-notif-badge';
+                btn.appendChild(badge);
+            }
+            badge.textContent = naoLidas > 9 ? '9+' : naoLidas;
+        } else if (badge) {
+            badge.remove();
+        }
+    }
+
+    function ativarCliquesNotif() {
+        const dropdown = document.getElementById('topbarNotifDropdown');
+        const btnMarcarTodas = document.getElementById('btnMarcarTodasLidas');
+
+        dropdown.querySelectorAll('.topbar-notif-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const id = Number(item.dataset.id);
+                VangustDB.marcarNotificacaoLida(id);
+                item.classList.remove('nao-lida');
+                const dot = item.querySelector('.topbar-notif-dot');
+                if (dot) dot.remove();
+                atualizarBadgeNotificacoes();
+            });
+        });
+
+        if (btnMarcarTodas) {
+            btnMarcarTodas.addEventListener('click', (e) => {
+                e.preventDefault();
+                VangustDB.marcarTodasNotificacoesLidas();
+                dropdown.innerHTML = renderNotifDropdown();
+                ativarCliquesNotif();
+                atualizarBadgeNotificacoes();
+            });
+        }
+    }
+
+    function ativarNotificacoes() {
+        const wrap = document.getElementById('topbarNotifWrap');
+        const btn = document.getElementById('topbarNotifBtn');
+        const dropdown = document.getElementById('topbarNotifDropdown');
+        if (!wrap || !btn || !dropdown) return;
+
+        atualizarBadgeNotificacoes();
+
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const vaiAbrir = !dropdown.classList.contains('show');
+            dropdown.classList.toggle('show');
+            if (vaiAbrir) {
+                dropdown.innerHTML = renderNotifDropdown();
+                ativarCliquesNotif();
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!wrap.contains(e.target)) dropdown.classList.remove('show');
+        });
+    }
+
     function montar(paginaAtual) {
         const spSidebar = document.getElementById('sidebar-placeholder');
         const spHeader = document.getElementById('header-placeholder');
@@ -151,7 +258,8 @@ const VangustLayout = (() => {
         }
 
         ativarBuscaGlobal();
+        ativarNotificacoes();
     }
 
-    return { montar };
+    return { montar, atualizarBadgeNotificacoes };
 })();

@@ -11,6 +11,11 @@ const VangustDB = (() => {
                 foto: null, // string base64 da imagem
                 data_cadastro: '2022-04-16T00:00:00.000Z',
             },
+            notificacoes: [
+                { id: 1, tipo: 'pedido', mensagem: 'Novo pedido recebido de Ana Beatriz Souza.', data: diasAtras(0), lida: false },
+                { id: 2, tipo: 'pedido', mensagem: 'Pedido #1 saiu para entrega.', data: diasAtras(0), lida: false },
+                { id: 3, tipo: 'estoque', mensagem: 'Estoque baixo: Veggie da Horta (20 un.).', data: diasAtras(1), lida: true },
+            ],
             clientes: [
                 { id_cliente: 1, nome: 'João Pedro Alves', email: 'joao@email.com', telefone: '(11) 99999-0001' },
                 { id_cliente: 2, nome: 'Ana Beatriz Souza', email: 'ana@email.com', telefone: '(11) 99999-0002' },
@@ -71,6 +76,10 @@ const VangustDB = (() => {
             db.usuarioAdmin.data_cadastro = '2022-04-16T00:00:00.000Z';
             alterado = true;
         }
+        if (!db.notificacoes) {
+            db.notificacoes = dadosIniciais().notificacoes;
+            alterado = true;
+        }
         if (alterado) salvar(db);
         return db;
     }
@@ -100,6 +109,7 @@ const VangustDB = (() => {
     }
 
     return {
+        // Autenticação 
         autenticar(email, senha) {
             const db = carregar();
             return db.usuarioAdmin.email === email && db.usuarioAdmin.senha === senha ? db.usuarioAdmin : null;
@@ -114,6 +124,39 @@ const VangustDB = (() => {
             return db.usuarioAdmin;
         },
 
+        // Notificações
+        listarNotificacoes() {
+            const db = carregar();
+            return db.notificacoes.slice().sort((a, b) => new Date(b.data) - new Date(a.data));
+        },
+        contarNotificacoesNaoLidas() {
+            const db = carregar();
+            return db.notificacoes.filter(n => !n.lida).length;
+        },
+        adicionarNotificacao(mensagem, tipo = 'sistema') {
+            const db = carregar();
+            db.notificacoes.unshift({
+                id: proximoId(db.notificacoes, 'id'),
+                tipo,
+                mensagem,
+                data: new Date().toISOString(),
+                lida: false,
+            });
+            salvar(db);
+        },
+        marcarNotificacaoLida(id) {
+            const db = carregar();
+            const n = db.notificacoes.find(n => n.id == id);
+            if (n) n.lida = true;
+            salvar(db);
+        },
+        marcarTodasNotificacoesLidas() {
+            const db = carregar();
+            db.notificacoes.forEach(n => n.lida = true);
+            salvar(db);
+        },
+
+        //Busca global (topbar)
         buscarGlobal(termo) {
             const t = termo.toLowerCase().trim();
             const db = carregar();
@@ -141,6 +184,7 @@ const VangustDB = (() => {
             return { produtos, clientes, pedidos };
         },
 
+        // Produtos
         listarProdutos() {
             return carregar().produtos.slice().sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nome.localeCompare(b.nome));
         },
@@ -168,6 +212,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
+        //  Entregadores 
         listarEntregadores() {
             const db = carregar();
             return db.entregadores.map(e => ({
@@ -194,6 +239,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
+        // Clientes 
         listarClientesComResumo() {
             const db = carregar();
             return db.clientes.map(c => {
@@ -205,6 +251,7 @@ const VangustDB = (() => {
             }).sort((a, b) => a.nome.localeCompare(b.nome));
         },
 
+        // Pedidos 
         listarPedidosDetalhados(filtroStatus = '') {
             const db = carregar();
             return db.pedidos
@@ -232,6 +279,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
+        //  Dashboard 
         getEstatisticasDashboard() {
             const db = carregar();
             const hoje = new Date().toDateString();

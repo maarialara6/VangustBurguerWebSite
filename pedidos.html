@@ -19,7 +19,7 @@
 
         <div class="page-body">
             <h1 class="page-title">Pedidos</h1>
-            <p class="page-subtitle">Acompanhe e atualize o status em tempo real.</p>
+            <p class="page-subtitle">Acompanhe e atualize o status dos pedidos em tempo real.</p>
 
             <div class="filtro-status" id="filtroStatus">
                 <button data-status="" class="active">Todos</button>
@@ -88,6 +88,8 @@
 
     function atualizarStatus(idPedido, novoStatus) {
         VangustDB.atualizarStatusPedido(idPedido, novoStatus);
+        VangustDB.adicionarNotificacao(`Pedido #${idPedido} atualizado para "${statusLabel(novoStatus)}".`, 'pedido');
+        VangustLayout.atualizarBadgeNotificacoes();
         mostrarToast(`Pedido #${idPedido} atualizado para "${statusLabel(novoStatus)}".`);
         renderizarPedidos();
     }

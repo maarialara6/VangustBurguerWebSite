@@ -171,6 +171,12 @@
 
         const editando = !!produto.id_produto;
         VangustDB.salvarProduto(produto);
+
+        if (produto.estoque <= 5) {
+            VangustDB.adicionarNotificacao(`Estoque baixo: ${produto.nome} (${produto.estoque} un.).`, 'estoque');
+            VangustLayout.atualizarBadgeNotificacoes();
+        }
+
         fecharModal();
         renderizarProdutos();
         mostrarToast(editando ? 'Produto atualizado com sucesso.' : 'Produto cadastrado com sucesso.');

@@ -68,6 +68,121 @@
 
 .topbar-search-item:hover { background: var(--vg-cream); }
 
+.topbar-notif-wrap {
+    position: relative;
+}
+
+.topbar-notif-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--vg-brown);
+    position: relative;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.topbar-notif-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: var(--vg-danger);
+    color: var(--vg-white);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 999px;
+    line-height: 1.4;
+}
+
+.topbar-notif-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 16px);
+    right: 0;
+    width: 340px;
+    max-width: 85vw;
+    max-height: 420px;
+    background: var(--vg-white);
+    border-radius: 12px;
+    box-shadow: var(--vg-shadow);
+    overflow: hidden;
+    z-index: 200;
+}
+
+.topbar-notif-dropdown.show { display: block; }
+
+.topbar-notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--vg-cream-dark);
+    font-size: 14px;
+    color: var(--vg-brown-dark);
+}
+
+.topbar-notif-header a {
+    font-size: 12px;
+    color: var(--vg-brown-light);
+    font-weight: 600;
+}
+.topbar-notif-header a:hover { text-decoration: underline; }
+
+.topbar-notif-lista {
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.topbar-notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px solid var(--vg-cream-dark);
+}
+.topbar-notif-item:last-child { border-bottom: none; }
+.topbar-notif-item:hover { background: var(--vg-cream); }
+.topbar-notif-item.nao-lida { background: rgba(217, 154, 82, 0.1); }
+
+.topbar-notif-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--vg-cream);
+    color: var(--vg-brown);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 14px;
+}
+
+.topbar-notif-texto p {
+    margin: 0 0 2px;
+    font-size: 13px;
+    color: var(--vg-text);
+    line-height: 1.4;
+}
+.topbar-notif-texto span {
+    font-size: 11px;
+    color: var(--vg-text-light);
+}
+
+.topbar-notif-dot {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--vg-tan-dark);
+}
+
 .topbar-search-empty {
     padding: 16px;
     text-align: center;
