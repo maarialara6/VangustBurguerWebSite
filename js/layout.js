@@ -17,7 +17,7 @@ const VangustLayout = (() => {
         return `
             <aside class="sidebar">
                 <div class="sidebar-logo">
-                    <img src="img/logo.png" alt="Vangust Burguer" onerror="this.style.display='none'">
+                    <img src="img/logo-2.png" alt="Vangust Burguer" onerror="this.style.display='none'">
                 </div>
                 <ul class="sidebar-nav">${itensHtml}</ul>
                 <div class="sidebar-footer">
