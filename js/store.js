@@ -72,10 +72,7 @@ const VangustDB = (() => {
             db.usuarioAdmin.foto = null;
             alterado = true;
         }
-        if (!db.usuarioAdmin.data_cadastro) {
-            db.usuarioAdmin.data_cadastro = '2022-04-16T00:00:00.000Z';
-            alterado = true;
-        }
+    
         if (!db.notificacoes) {
             db.notificacoes = dadosIniciais().notificacoes;
             alterado = true;
@@ -156,7 +153,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        //Busca global (topbar)
+        //Topbar
         buscarGlobal(termo) {
             const t = termo.toLowerCase().trim();
             const db = carregar();

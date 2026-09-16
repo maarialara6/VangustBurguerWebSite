@@ -7,6 +7,7 @@
             overflow: hidden;
         }
 
+
         .perfil-banner {
             height: 110px;
             background: linear-gradient(135deg, var(--vg-tan), var(--vg-cream-dark));
