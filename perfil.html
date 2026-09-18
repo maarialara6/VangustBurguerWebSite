@@ -28,7 +28,6 @@
 
             <div class="perfil-card">
 
-                <!--ODO VISUALIZAÇÃO-->
                 <div id="viewMode">
                     <div class="perfil-banner"></div>
                     <div class="perfil-avatar-wrap">
@@ -53,7 +52,7 @@
                         </div>
                         <div class="perfil-info-row">
                             <span class="label">Senha:</span>
-                            <span class="valor">••••••••<i class="fa-solid fa-lock" style="color:var(--vg-text-light);font-size:12px;"></i></span>
+                            <span class="valor">•••••••• <i class="fa-solid fa-lock" style="color:var(--vg-text-light);font-size:12px;"></i></span>
                         </div>
                         <div class="perfil-info-row">
                             <span class="label">Status:</span>
@@ -76,7 +75,6 @@
                     </div>
                 </div>
 
-                <!--MODO EDIÇÃO-->
                 <div id="editMode" style="display:none;padding:24px;">
                     <form id="formPerfil">
                         <div class="perfil-foto-upload">
@@ -86,8 +84,13 @@
                             </label>
                             <input type="file" id="f_foto" accept="image/*" style="display:none;">
                         </div>
-                        <p style="text-align:center;color:var(--vg-text-light);font-size:12px;margin-top:10px;margin-bottom:22px;">
+                        <p style="text-align:center;color:var(--vg-text-light);font-size:12px;margin-top:10px;margin-bottom:4px;">
                             Clique no ícone da câmera para trocar a foto
+                        </p>
+                        <p style="text-align:center;margin-top:0;margin-bottom:22px;">
+                            <a href="#" id="btnRemoverFoto" style="font-size:12px;color:var(--vg-danger);font-weight:600;">
+                                <i class="fa-solid fa-trash" style="font-size:11px;"></i> Remover foto
+                            </a>
                         </p>
 
                         <div class="form-group">
@@ -125,7 +128,8 @@
     VangustAuth.exigirLogin();
     VangustLayout.montar('perfil.html');
 
-    let fotoTemporaria = null; // guarda a nova foto (base64)
+    let fotoTemporaria = null;
+    let fotoRemovida = false;
 
     function preencherAvatar(elementoId, usuario) {
         const el = document.getElementById(elementoId);
@@ -141,7 +145,6 @@
     function carregarDados() {
         const usuario = VangustDB.getUsuarioAdmin();
 
-        // Modo visualização
         document.getElementById('viewNome').textContent = usuario.nome;
         document.getElementById('viewEmail').textContent = usuario.email;
         document.getElementById('viewEmailRow').textContent = usuario.email;
@@ -150,13 +153,13 @@
             : '—';
         preencherAvatar('viewAvatar', usuario);
 
-        // Modo edição (campos)
         document.getElementById('f_nome').value = usuario.nome;
         document.getElementById('f_email').value = usuario.email;
         document.getElementById('f_senha').value = '';
         preencherAvatar('editAvatar', usuario);
 
         fotoTemporaria = null;
+        fotoRemovida = false;
     }
 
     function ativarEdicao() {
@@ -181,12 +184,26 @@
 
         const leitor = new FileReader();
         leitor.onload = function (ev) {
-            fotoTemporaria = ev.target.result; // base64
+            fotoTemporaria = ev.target.result;
+            fotoRemovida = false;
             const el = document.getElementById('editAvatar');
             el.style.backgroundImage = `url('${fotoTemporaria}')`;
             el.textContent = '';
         };
         leitor.readAsDataURL(arquivo);
+    });
+
+    document.getElementById('btnRemoverFoto').addEventListener('click', function (e) {
+        e.preventDefault();
+
+        fotoTemporaria = null;
+        fotoRemovida = true;
+        document.getElementById('f_foto').value = '';
+
+        const el = document.getElementById('editAvatar');
+        const nomeAtual = document.getElementById('f_nome').value.trim() || VangustDB.getUsuarioAdmin().nome;
+        el.style.backgroundImage = '';
+        el.textContent = nomeAtual.charAt(0).toUpperCase();
     });
 
     document.getElementById('formPerfil').addEventListener('submit', function (e) {
@@ -201,6 +218,7 @@
         if (email) dados.email = email;
         if (senha) dados.senha = senha;
         if (fotoTemporaria) dados.foto = fotoTemporaria;
+        else if (fotoRemovida) dados.foto = null;
 
         VangustDB.atualizarUsuarioAdmin(dados);
         carregarDados();
@@ -214,7 +232,6 @@
 
         mostrarToast('Perfil atualizado com sucesso.');
 
-        // Atualiza avatar/nome no header sem precisar recarregar a página
         VangustLayout.montar('perfil.html');
     });
 
