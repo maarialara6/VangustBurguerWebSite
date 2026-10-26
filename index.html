@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
 <body class="login-page">
     <div class="login-box">
         <div class="login-logo">
-            <img src="img/logo-3.png" alt="Vangust Burguer" onerror="this.style.display='none'">
+            <img src="img/logo.png" alt="Vangust Burguer" onerror="this.style.display='none'">
             <h1>Vangust Burguer</h1>
             <p>Painel Administrativo</p>
         </div>
@@ -28,10 +28,6 @@
             </div>
             <button type="submit" class="btn btn-dark">Entrar</button>
         </form>
-
-        <div class="login-hint">
-            use <strong>admin@vangustburguer.com</strong> / <strong>admin123</strong>
-        </div>
     </div>
 
     <script src="js/store.js"></script>
@@ -41,13 +37,16 @@
             window.location.href = 'dashboard.html';
         }
 
-        document.getElementById('formLogin').addEventListener('submit', function (e) {
+        document.getElementById('formLogin').addEventListener('submit', async function (e) {
             e.preventDefault();
             const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('senha').value;
             const erroBox = document.getElementById('mensagemErro');
 
-            if (VangustAuth.login(email, senha)) {
+            // Tenta fazer o login real na API
+            const sucesso = await VangustAuth.login(email, senha);
+
+            if (sucesso) {
                 window.location.href = 'dashboard.html';
             } else {
                 erroBox.textContent = 'E-mail ou senha inválidos.';

@@ -7,8 +7,8 @@ const VangustDB = (() => {
                 id_usuario: 1,
                 nome: 'Gustavo Freire',
                 email: 'admin@vangustburguer.com',
-                senha: 'admin123',
-                foto: null, // string base64 da imagem
+                senha: 'admin123', // apenas para o protótipo em memória; no backend real, NUNCA em texto puro
+                foto: null, // string base64 da imagem, quando definida pelo usuário
                 data_cadastro: '2022-04-16T00:00:00.000Z',
             },
             notificacoes: [
@@ -72,7 +72,10 @@ const VangustDB = (() => {
             db.usuarioAdmin.foto = null;
             alterado = true;
         }
-    
+        if (!db.usuarioAdmin.data_cadastro) {
+            db.usuarioAdmin.data_cadastro = '2022-04-16T00:00:00.000Z';
+            alterado = true;
+        }
         if (!db.notificacoes) {
             db.notificacoes = dadosIniciais().notificacoes;
             alterado = true;
@@ -106,7 +109,7 @@ const VangustDB = (() => {
     }
 
     return {
-        // Autenticação 
+        // ---------- Autenticação ----------
         autenticar(email, senha) {
             const db = carregar();
             return db.usuarioAdmin.email === email && db.usuarioAdmin.senha === senha ? db.usuarioAdmin : null;
@@ -181,7 +184,7 @@ const VangustDB = (() => {
             return { produtos, clientes, pedidos };
         },
 
-        // Produtos
+        // ---------- Produtos ----------
         listarProdutos() {
             return carregar().produtos.slice().sort((a, b) => a.categoria.localeCompare(b.categoria) || a.nome.localeCompare(b.nome));
         },
@@ -209,7 +212,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        //  Entregadores 
+        // ---------- Entregadores ----------
         listarEntregadores() {
             const db = carregar();
             return db.entregadores.map(e => ({
@@ -236,7 +239,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        // Clientes 
+        // ---------- Clientes ----------
         listarClientesComResumo() {
             const db = carregar();
             return db.clientes.map(c => {
@@ -248,7 +251,7 @@ const VangustDB = (() => {
             }).sort((a, b) => a.nome.localeCompare(b.nome));
         },
 
-        // Pedidos 
+        // ---------- Pedidos ----------
         listarPedidosDetalhados(filtroStatus = '') {
             const db = carregar();
             return db.pedidos
@@ -276,7 +279,7 @@ const VangustDB = (() => {
             salvar(db);
         },
 
-        //  Dashboard 
+        // ---------- Dashboard ----------
         getEstatisticasDashboard() {
             const db = carregar();
             const hoje = new Date().toDateString();
@@ -314,6 +317,7 @@ const VangustDB = (() => {
             return { totalProdutosAtivos, totalClientes, pedidosHoje, receitaTotal, statusCount, labels, valores, pedidosRecentes };
         },
 
+        // ---------- Utilitário (botão "resetar dados de exemplo") ----------
         resetar() {
             salvar(dadosIniciais());
         },

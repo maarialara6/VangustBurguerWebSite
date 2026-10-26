@@ -101,6 +101,7 @@
             text-align: center;
         }
 
+        /* ---- Upload de foto (modo edição) ---- */
         .perfil-foto-upload {
             position: relative;
             width: 100px;

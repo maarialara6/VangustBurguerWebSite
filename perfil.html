@@ -20,7 +20,7 @@
 
         <div class="page-body">
             <h1 class="page-title">Meu Perfil</h1>
-            <p class="page-subtitle">Visualize e gerencie seus dados de administrador.</p>
+            <p class="page-subtitle">Visualize e gerencie seus dados.</p>
 
             <div id="mensagemSucesso" class="alert alert-success" style="max-width:460px;margin:0 auto 18px;display:none;">
                 Dados atualizados com sucesso.
@@ -28,6 +28,7 @@
 
             <div class="perfil-card">
 
+                <!-- MODO VISUALIZAÇÃO -->
                 <div id="viewMode">
                     <div class="perfil-banner"></div>
                     <div class="perfil-avatar-wrap">
@@ -35,7 +36,7 @@
                     </div>
                     <div class="perfil-nome">
                         <span id="viewNome"></span>
-                        <i class="fa-solid fa-circle-check" title="Administrador verificado"></i>
+                        <i class="fa-solid fa-circle-check" title="Funcionário verificado"></i>
                     </div>
                     <p class="perfil-email" id="viewEmail"></p>
 
@@ -44,7 +45,10 @@
                     <div class="perfil-info-list">
                         <div class="perfil-info-row">
                             <span class="label">Cargo:</span>
-                            <span class="valor"><i class="fa-solid fa-user-shield" style="color:var(--vg-brown-light);"></i> Administrador</span>
+                            <span class="valor">
+                                <i class="fa-solid fa-user-shield" style="color:var(--vg-brown-light);"></i> 
+                                <span id="textoCargo">Funcionário</span>
+                            </span>
                         </div>
                         <div class="perfil-info-row">
                             <span class="label">E-mail:</span>
@@ -52,19 +56,11 @@
                         </div>
                         <div class="perfil-info-row">
                             <span class="label">Senha:</span>
-                            <span class="valor">•••••••• <i class="fa-solid fa-lock" style="color:var(--vg-text-light);font-size:12px;"></i></span>
+                            <span class="valor">•••••••••<i class="fa-solid fa-lock" style="color:var(--vg-text-light);font-size:12px;"></i></span>
                         </div>
                         <div class="perfil-info-row">
                             <span class="label">Status:</span>
                             <span class="valor"><span class="perfil-badge ativo">Ativo</span></span>
-                        </div>
-                        <div class="perfil-info-row">
-                            <span class="label">Nível de acesso:</span>
-                            <span class="valor"><span class="perfil-badge cargo">Acesso total</span></span>
-                        </div>
-                        <div class="perfil-info-row">
-                            <span class="label">Membro desde:</span>
-                            <span class="valor"><i class="fa-regular fa-calendar" style="color:var(--vg-text-light);"></i> <span id="viewDataCadastro"></span></span>
                         </div>
                     </div>
 
@@ -75,38 +71,28 @@
                     </div>
                 </div>
 
+                <!-- MODO EDIÇÃO (Com margem corrigida para o avatar não cortar) -->
                 <div id="editMode" style="display:none;padding:24px;">
                     <form id="formPerfil">
-                        <div class="perfil-foto-upload">
+                        <div class="perfil-banner" style="margin: -24px -24px 20px -24px; border-radius: 12px 12px 0 0;"></div>
+                        <div class="perfil-avatar-wrap" style="margin-top: -65px; margin-bottom: 25px;">
                             <div class="perfil-avatar-grande" id="editAvatar"></div>
-                            <label class="trocar-foto" for="f_foto" title="Trocar foto">
-                                <i class="fa-solid fa-camera"></i>
-                            </label>
-                            <input type="file" id="f_foto" accept="image/*" style="display:none;">
                         </div>
-                        <p style="text-align:center;color:var(--vg-text-light);font-size:12px;margin-top:10px;margin-bottom:4px;">
-                            Clique no ícone da câmera para trocar a foto
-                        </p>
-                        <p style="text-align:center;margin-top:0;margin-bottom:22px;">
-                            <a href="#" id="btnRemoverFoto" style="font-size:12px;color:var(--vg-danger);font-weight:600;">
-                                <i class="fa-solid fa-trash" style="font-size:11px;"></i> Remover foto
-                            </a>
-                        </p>
 
                         <div class="form-group">
                             <label>Nome</label>
-                            <input type="text" id="f_nome">
+                            <input type="text" id="f_nome" required>
                         </div>
                         <div class="form-group">
                             <label>E-mail</label>
-                            <input type="email" id="f_email">
+                            <input type="email" id="f_email" required>
                         </div>
                         <div class="form-group">
                             <label>Nova senha</label>
                             <input type="password" id="f_senha" placeholder="Deixe em branco para manter a atual">
                         </div>
 
-                        <div class="modal-actions">
+                        <div class="modal-actions" style="margin-top: 20px;">
                             <button type="button" class="btn btn-outline" onclick="cancelarEdicao()">Cancelar</button>
                             <button type="submit" class="btn btn-primary">Salvar alterações</button>
                         </div>
@@ -128,38 +114,42 @@
     VangustAuth.exigirLogin();
     VangustLayout.montar('perfil.html');
 
-    let fotoTemporaria = null;
-    let fotoRemovida = false;
+    // Definição dinâmica do URL da API para suportar localhost e Locaweb
+    const API_BASE = window.location.hostname === 'localhost' 
+        ? 'http://localhost/api_hamburgueria/' 
+        : window.location.origin + '/api_hamburgueria/';
 
     function preencherAvatar(elementoId, usuario) {
         const el = document.getElementById(elementoId);
+        if (!el) return;
         if (usuario.foto) {
             el.style.backgroundImage = `url('${usuario.foto}')`;
             el.textContent = '';
         } else {
             el.style.backgroundImage = '';
-            el.textContent = usuario.nome.charAt(0).toUpperCase();
+            el.textContent = usuario.nome ? usuario.nome.charAt(0).toUpperCase() : 'A';
         }
     }
 
     function carregarDados() {
-        const usuario = VangustDB.getUsuarioAdmin();
+        const usuario = VangustAuth.getUsuarioLogado();
+        if (!usuario) return;
 
+        // Modo visualização
         document.getElementById('viewNome').textContent = usuario.nome;
         document.getElementById('viewEmail').textContent = usuario.email;
         document.getElementById('viewEmailRow').textContent = usuario.email;
-        document.getElementById('viewDataCadastro').textContent = usuario.data_cadastro
-            ? formatarData(usuario.data_cadastro).split(' ')[0]
-            : '—';
+        
+        const cargoAtual = usuario.cargo ? usuario.cargo : 'Funcionário';
+        document.getElementById('textoCargo').textContent = cargoAtual;
+
         preencherAvatar('viewAvatar', usuario);
 
+        // Modo edição
         document.getElementById('f_nome').value = usuario.nome;
         document.getElementById('f_email').value = usuario.email;
         document.getElementById('f_senha').value = '';
         preencherAvatar('editAvatar', usuario);
-
-        fotoTemporaria = null;
-        fotoRemovida = false;
     }
 
     function ativarEdicao() {
@@ -173,66 +163,67 @@
         document.getElementById('viewMode').style.display = 'block';
     }
 
-    document.getElementById('f_foto').addEventListener('change', function (e) {
-        const arquivo = e.target.files[0];
-        if (!arquivo) return;
+    document.getElementById('formPerfil').addEventListener('submit', async function (e) {
+        e.preventDefault();
 
-        if (!arquivo.type.startsWith('image/')) {
-            alert('Selecione um arquivo de imagem válido.');
+        const usuarioAtual = VangustAuth.getUsuarioLogado();
+        if (!usuarioAtual) {
+            alert('Sessão expirada. Faça login novamente.');
+            window.location.href = 'index.html';
             return;
         }
 
-        const leitor = new FileReader();
-        leitor.onload = function (ev) {
-            fotoTemporaria = ev.target.result;
-            fotoRemovida = false;
-            const el = document.getElementById('editAvatar');
-            el.style.backgroundImage = `url('${fotoTemporaria}')`;
-            el.textContent = '';
-        };
-        leitor.readAsDataURL(arquivo);
-    });
-
-    document.getElementById('btnRemoverFoto').addEventListener('click', function (e) {
-        e.preventDefault();
-
-        fotoTemporaria = null;
-        fotoRemovida = true;
-        document.getElementById('f_foto').value = '';
-
-        const el = document.getElementById('editAvatar');
-        const nomeAtual = document.getElementById('f_nome').value.trim() || VangustDB.getUsuarioAdmin().nome;
-        el.style.backgroundImage = '';
-        el.textContent = nomeAtual.charAt(0).toUpperCase();
-    });
-
-    document.getElementById('formPerfil').addEventListener('submit', function (e) {
-        e.preventDefault();
-
+        const idUsuario = usuarioAtual.id_usuario || usuarioAtual.id;
         const nome = document.getElementById('f_nome').value.trim();
         const email = document.getElementById('f_email').value.trim();
         const senha = document.getElementById('f_senha').value;
 
-        const dados = {};
-        if (nome) dados.nome = nome;
-        if (email) dados.email = email;
-        if (senha) dados.senha = senha;
-        if (fotoTemporaria) dados.foto = fotoTemporaria;
-        else if (fotoRemovida) dados.foto = null;
+        if (!idUsuario || !nome || !email) {
+            alert('Erro: ID, nome e e-mail são obrigatórios.');
+            return;
+        }
 
-        VangustDB.atualizarUsuarioAdmin(dados);
-        carregarDados();
+        const formData = new FormData();
+        formData.append('id_usuario', idUsuario);
+        formData.append('nome', nome);
+        formData.append('email', email);
+        if (senha) {
+            formData.append('senha', senha);
+        }
 
-        document.getElementById('editMode').style.display = 'none';
-        document.getElementById('viewMode').style.display = 'block';
+        try {
+            const resposta = await fetch(API_BASE + 'atualizar_perfil.php', {
+                method: 'POST',
+                body: formData
+            });
 
-        const msg = document.getElementById('mensagemSucesso');
-        msg.style.display = 'block';
-        setTimeout(() => msg.style.display = 'none', 3000);
+            const resultado = await resposta.json();
 
-        mostrarToast('Perfil atualizado com sucesso.');
+            if (resposta.ok && resultado.sucesso) {
+                const cargoAtual = resultado.usuario && resultado.usuario.cargo ? resultado.usuario.cargo : (usuarioAtual.cargo || 'Atendente');
+                const dadosAtualizados = { ...usuarioAtual, id_usuario: idUsuario, nome, email, cargo: cargoAtual };
+                
+                sessionStorage.setItem('vangust_admin_dados', JSON.stringify(dadosAtualizados));
 
-        VangustLayout.montar('perfil.html');
+                carregarDados();
+                document.getElementById('editMode').style.display = 'none';
+                document.getElementById('viewMode').style.display = 'block';
+
+                const msg = document.getElementById('mensagemSucesso');
+                msg.style.display = 'block';
+                setTimeout(() => msg.style.display = 'none', 3000);
+
+                if (typeof mostrarToast === 'function') {
+                    mostrarToast('Perfil atualizado com sucesso.');
+                }
+                VangustLayout.montar('perfil.html');
+            } else {
+                alert('Erro ao atualizar: ' + (resultado.erro || resultado.mensagem || 'Erro desconhecido'));
+            }
+        } catch (erro) {
+            alert('Erro de conexão com a API.');
+            console.error(erro);
+        }
     });
 
     carregarDados();

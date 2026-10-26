@@ -19,7 +19,7 @@
 
         <div class="page-body">
             <h1 class="page-title">Pedidos</h1>
-            <p class="page-subtitle">Acompanhe e atualize o status dos pedidos em tempo real.</p>
+            <p class="page-subtitle">Acompanhe e atualize o status em tempo real.</p>
 
             <div class="filtro-status" id="filtroStatus">
                 <button data-status="" class="active">Todos</button>
@@ -34,7 +34,15 @@
                 <div class="table-wrap">
                     <table class="vg-table">
                         <thead>
-                            <tr><th>#</th><th>Cliente</th><th>Itens</th><th>Entregador</th><th>Valor</th><th>Status</th><th>Data</th></tr>
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente / Endereço</th>
+                                <th>Itens & Observação</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Entregador</th>
+                                <th>Data</th>
+                            </tr>
                         </thead>
                         <tbody id="tbodyPedidos"></tbody>
                     </table>
@@ -54,55 +62,150 @@
     VangustAuth.exigirLogin();
     VangustLayout.montar('pedidos.html');
 
-    let filtroAtual = '';
+    // Definição dinâmica do URL da API para suportar localhost e Locaweb
+    const API_BASE = window.location.hostname === 'localhost' 
+        ? 'http://localhost/api_hamburgueria/' 
+        : window.location.origin + '/api_hamburgueria/';
 
-    function renderizarPedidos() {
-        const pedidos = VangustDB.listarPedidosDetalhados(filtroAtual);
-        const tbody = document.getElementById('tbodyPedidos');
+    let todosOsPedidos = [];
+    let listaEntregadoresGlobal = [];
 
-        tbody.innerHTML = pedidos.length ? pedidos.map(p => `
-            <tr>
-                <td>#${p.id_pedido}</td>
-                <td>
-                    <strong>${p.cliente_nome}</strong><br>
-                    <span style="color:var(--vg-text-light);font-size:12px;">${p.cliente_telefone}</span>
-                </td>
-                <td>
-                    <div class="detalhe-itens">
-                        ${p.itens.map(i => `${i.quantidade}x ${i.nome_produto}`).join('<br>')}
-                    </div>
-                </td>
-                <td>${p.entregador_nome || '—'}</td>
-                <td>${formatarMoeda(p.valor_total)}</td>
-                <td>
-                    <select class="status-select" onchange="atualizarStatus(${p.id_pedido}, this.value)">
-                        ${['recebido','em_preparo','saiu_entrega','entregue','cancelado'].map(s => `
-                            <option value="${s}" ${p.status === s ? 'selected' : ''}>${statusLabel(s)}</option>
-                        `).join('')}
-                    </select>
-                </td>
-                <td>${formatarData(p.data_pedido)}</td>
-            </tr>
-        `).join('') : `<tr><td colspan="7" class="empty-state">Nenhum pedido encontrado.</td></tr>`;
+    async function carregarPedidos() {
+        try {
+            const resposta = await fetch(API_BASE + 'listar_pedidos.php');
+            const resultado = await resposta.json();
+
+            todosOsPedidos = resultado.pedidos || [];
+            listaEntregadoresGlobal = resultado.entregadores || [];
+
+            renderizarTabela(todosOsPedidos);
+        } catch (erro) {
+            console.error("Erro ao carregar pedidos:", erro);
+        }
     }
 
-    function atualizarStatus(idPedido, novoStatus) {
-        VangustDB.atualizarStatusPedido(idPedido, novoStatus);
-        VangustDB.adicionarNotificacao(`Pedido #${idPedido} atualizado para "${statusLabel(novoStatus)}".`, 'pedido');
-        VangustLayout.atualizarBadgeNotificacoes();
-        mostrarToast(`Pedido #${idPedido} atualizado para "${statusLabel(novoStatus)}".`);
-        renderizarPedidos();
+    function renderizarTabela(pedidos) {
+        const tbody = document.getElementById('tbodyPedidos') || document.querySelector('table tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = pedidos.length ? pedidos.map(p => {
+            const itensStr = p.itens ? p.itens.map(i => `${i.quantidade}x ${i.nome_produto}`).join(', ') : 'Nenhum item';
+            
+            const obsHtml = p.observacao ? `<br><small style="color:#d9534f;"><i class="fa-solid fa-triangle-exclamation"></i> <b>Obs:</b> ${p.observacao}</small>` : '';
+            
+            let opcoesEntregadores = '<option value="">Sem entregador</option>';
+            listaEntregadoresGlobal.forEach(e => {
+                const selecionado = e.id_entregador == p.id_entregador ? 'selected' : '';
+                opcoesEntregadores += `<option value="${e.id_entregador}" ${selecionado}>${e.nome}</option>`;
+            });
+
+            return `
+                <tr>
+                    <td><strong>#${p.id_pedido}</strong></td>
+                    <td>
+                        <strong>${p.nome_cliente}</strong><br>
+                        <small style="color:#555;"><i class="fa-solid fa-location-dot" style="color:#e67e22;"></i> ${p.endereco_completo || 'Endereço não informado'}</small><br>
+                        <small style="color:#777;">Tel: ${p.telefone || 'Não informado'}</small>
+                    </td>
+                    <td>
+                        ${itensStr}
+                        ${obsHtml}
+                    </td>
+                    <td><strong>R$ ${parseFloat(p.valor_total_pedido).toFixed(2).replace('.', ',')}</strong></td>
+                    <td>
+                        <select class="form-control" style="padding: 4px; font-size: 12px;" onchange="alterarStatus(${p.id_pedido}, this.value)">
+                            <option value="Pendente" ${p.status_pedido === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                            <option value="Em preparo" ${p.status_pedido === 'Em preparo' ? 'selected' : ''}>Em preparo</option>
+                            <option value="Saiu para entrega" ${p.status_pedido === 'Saiu para entrega' ? 'selected' : ''}>Saiu para entrega</option>
+                            <option value="Entregue" ${p.status_pedido === 'Entregue' ? 'selected' : ''}>Entregue</option>
+                            <option value="Cancelado" ${p.status_pedido === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" style="padding: 4px; font-size: 12px;" onchange="atribuirEntregador(${p.id_pedido}, this.value)">
+                            ${opcoesEntregadores}
+                        </select>
+                    </td>
+                    <td>${p.criado_em}</td>
+                </tr>
+            `;
+        }).join('') : `<tr><td colspan="7" style="text-align:center; padding: 20px;">Nenhum pedido encontrado para este filtro.</td></tr>`;
     }
 
-    document.getElementById('filtroStatus').addEventListener('click', function (e) {
-        if (e.target.tagName !== 'BUTTON') return;
-        [...this.children].forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        filtroAtual = e.target.dataset.status;
-        renderizarPedidos();
+    function filtrarPedidos(statusFiltro, elementoBtn) {
+        document.querySelectorAll('.page-body button, .page-body .btn').forEach(b => b.classList.remove('active'));
+        if (elementoBtn) elementoBtn.classList.add('active');
+
+        if (statusFiltro === 'Todos') {
+            renderizarTabela(todosOsPedidos);
+        } else {
+            const filtrados = todosOsPedidos.filter(p => p.status_pedido.toLowerCase() === statusFiltro.toLowerCase());
+            renderizarTabela(filtrados);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            const botoesFiltro = document.querySelectorAll('.page-body button, .page-body .btn');
+            botoesFiltro.forEach(btn => {
+                const texto = btn.textContent.trim();
+                if (['Todos', 'Recebido', 'Em preparo', 'Saiu p/ entrega', 'Entregue', 'Cancelado'].includes(texto)) {
+                    btn.onclick = (e) => {
+                        let statusMapeado = texto;
+                        if (texto === 'Recebido') statusMapeado = 'Pendente';
+                        if (texto === 'Saiu p/ entrega') statusMapeado = 'Saiu para entrega';
+                        if (texto === 'Cancelado') statusMapeado = 'Cancelado';
+                        filtrarPedidos(statusMapeado, e.currentTarget);
+                    };
+                }
+            });
+        }, 500);
     });
 
-    renderizarPedidos();
+    async function alterarStatus(idPedido, novoStatus) {
+        const formData = new FormData();
+        formData.append('id_pedido', idPedido);
+        formData.append('status_pedido', novoStatus);
+
+        try {
+            const resposta = await fetch(API_BASE + 'atualizar_status_pedido.php', {
+                method: 'POST',
+                body: formData
+            });
+            const resultado = await resposta.json();
+            if (resposta.ok && resultado.sucesso) {
+                if (typeof mostrarToast === 'function') mostrarToast(resultado.mensagem);
+                carregarPedidos();
+            } else {
+                alert('Erro ao atualizar status.');
+            }
+        } catch (erro) {
+            console.error(erro);
+        }
+    }
+
+    async function atribuirEntregador(idPedido, idEntregador) {
+        const formData = new FormData();
+        formData.append('id_pedido', idPedido);
+        formData.append('id_entregador', idEntregador);
+
+        try {
+            const resposta = await fetch(API_BASE + 'atribuir_entregador.php', {
+                method: 'POST',
+                body: formData
+            });
+            const resultado = await resposta.json();
+            if (resposta.ok && resultado.sucesso) {
+                if (typeof mostrarToast === 'function') mostrarToast('Entregador atribuído com sucesso!');
+            } else {
+                alert('Erro ao atribuir entregador.');
+            }
+        } catch (erro) {
+            console.error(erro);
+        }
+    }
+
+    carregarPedidos();
 </script>
 </body>
 </html>
