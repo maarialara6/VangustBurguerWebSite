@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedbacks — Vangust Burguer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/feedbacks.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/footer.css">
+<body>
+<div class="app-shell">
+    <div id="sidebar-placeholder"></div>
+
+    <div class="main-content">
+        <div id="header-placeholder"></div>
+
+        <div class="page-body">
+            <h1 class="page-title">Feedbacks</h1>
+            <p class="page-subtitle">O que os clientes disseram sobre os pedidos.</p>
+
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fa-solid fa-star"></i></div>
+                    <div>
+                        <div class="stat-value" id="statMedia">–</div>
+                        <div class="stat-label">Nota média</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon brown"><i class="fa-solid fa-comments"></i></div>
+                    <div>
+                        <div class="stat-value" id="statTotal">–</div>
+                        <div class="stat-label">Feedbacks recebidos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success"><i class="fa-solid fa-thumbs-up"></i></div>
+                    <div>
+                        <div class="stat-value" id="statPositivos">–</div>
+                        <div class="stat-label">Notas 4 e 5</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-box" style="margin-bottom:24px;">
+                <div class="card-header-row"><h3>Distribuição das notas</h3></div>
+                <div class="fb-distribuicao" id="distribuicao"></div>
+            </div>
+
+            <div class="fb-toolbar">
+                <input type="search" id="filtroBusca" placeholder="Buscar por cliente ou comentário" aria-label="Buscar feedback">
+                <select id="filtroNota" aria-label="Filtrar por nota">
+                    <option value="">Todas as notas</option>
+                    <option value="5">5 estrelas</option>
+                    <option value="4">4 estrelas</option>
+                    <option value="3">3 estrelas</option>
+                    <option value="2">2 estrelas</option>
+                    <option value="1">1 estrela</option>
+                </select>
+                <select id="filtroOrdem" aria-label="Ordenar">
+                    <option value="recentes">Mais recentes</option>
+                    <option value="antigos">Mais antigos</option>
+                    <option value="maior">Maior nota</option>
+                    <option value="menor">Menor nota</option>
+                </select>
+            </div>
+
+            <div class="fb-lista" id="listaFeedbacks" aria-live="polite"></div>
+        </div>
+
+        <div id="footer-placeholder"></div>
+    </div>
+</div>
+</body>
+</html>
+
