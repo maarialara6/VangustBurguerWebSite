@@ -34,7 +34,7 @@ const VangustLayout = (() => {
         const usuario = VangustAuth.getUsuarioLogado();
         const inicial = usuario && usuario.nome ? usuario.nome.charAt(0).toUpperCase() : 'U';
         const nomeUsuario = usuario && usuario.nome ? usuario.nome : 'Utilizador';
-        const cargoUsuario = usuario && usuario.cargo ? usuario.cargo : 'Funcionário'; // <--- Lê dinamicamente o cargo
+        const cargoUsuario = usuario && usuario.cargo ? usuario.cargo : 'Funcionário'; 
         
         const avatarHtml = usuario && usuario.foto
             ? `<img src="${usuario.foto}" alt="${nomeUsuario}" class="topbar-avatar" style="object-fit:cover;">`
