@@ -1,12 +1,10 @@
  VangustAuth.exigirLogin();
     VangustLayout.montar('cardapio.html');
 
-    // Definição dinâmica do URL da API para suportar localhost e Locaweb sem alterações manuais
     const API_BASE = window.location.hostname === 'localhost' 
         ? 'http://localhost/api_hamburgueria/' 
         : window.location.origin + '/api_hamburgueria/';
 
-    // 1. Função para carregar os produtos reais da base de dados via API
     async function renderizarProdutos() {
         const tbody = document.getElementById('tbodyProdutos');
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">A carregar produtos...</td></tr>';
