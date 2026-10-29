@@ -5,7 +5,8 @@ const VangustLayout = (() => {
     { pagina: 'cardapio.html', icone: 'fa-burger', label: 'Cardápio' },
     { pagina: 'clientes.html', icone: 'fa-users', label: 'Clientes' },
     { pagina: 'entregadores.html', icone: 'fa-motorcycle', label: 'Entregadores' },
-    { pagina: 'funcionarios.html', icone: 'fa-user-shield', label: 'Funcionários' }, // <--- ADICIONADO AQUI
+    { pagina: 'funcionarios.html', icone: 'fa-user-shield', label: 'Funcionários' }, 
+    { pagina: 'feedbacks.html', icone: 'fa-comments', label: 'Feedbacks' },I
     { pagina: 'cupons.html', icone: 'fa-ticket', label: 'Cupons' },
 ];
 
